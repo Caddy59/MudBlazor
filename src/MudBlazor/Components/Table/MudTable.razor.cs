@@ -434,10 +434,35 @@ namespace MudBlazor
             SelectedItem = item.As<T>();
         }
 
+        public override IEnumerable<object> GetFilteredItems()
+        {
+            return FilteredItems.Cast<object>();
+        }
+
         public override void SetEditingItem(object item)
         {
             if (!ReferenceEquals(_editingItem, item))
                 _editingItem = item;
+        }
+
+        internal override bool? IsAllItemsSelected(IEnumerable<object> selectedItems)
+        {
+            var selectedItemsT = selectedItems?.Cast<T>().ToList();
+
+            if (selectedItemsT is null)
+                return false;
+
+            var serverDataItemsCount = _server_data.Items?.Except(selectedItemsT).Count();
+
+            if (serverDataItemsCount is not null)
+            {
+                if (serverDataItemsCount == 0 && selectedItemsT.Count > 0)
+                    return true;
+                if (_server_data.Items.Count() - serverDataItemsCount == 0)
+                    return false;
+            }
+
+            return null;
         }
 
         public override bool ContainsItem(object item)

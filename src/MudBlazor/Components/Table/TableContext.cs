@@ -61,37 +61,73 @@ namespace MudBlazor
             if (!Table.MultiSelection)
                 return;
 
-            if (updateGroups)
+            if (Table.PersistSelectedItems)
             {
-                // Update group checkboxes
-                foreach (var groupRow in GroupRows)
+                if (updateGroups)
                 {
-                    var rowGroupItems = groupRow.Items.ToList();
-                    var itemsCount = Selection.Intersect(rowGroupItems).Count();
-                    var selectAll = itemsCount == rowGroupItems.Count;
-                    var indeterminate = !selectAll && itemsCount > 0 && Selection.Count > 0;
-                    var state = indeterminate && !selectAll ? (bool?)null : selectAll;
-                    groupRow.SetChecked(state, notify: false);
+                    // Update group checkboxes
+                    foreach (var groupRow in GroupRows)
+                    {
+                        var rowGroupItems = groupRow.Items.ToList();
+                        var itemsCount = Selection.Intersect(rowGroupItems).Count();
+                        var selectAll = itemsCount == rowGroupItems.Count;
+                        var indeterminate = !selectAll && itemsCount > 0 && Selection.Count > 0;
+                        var state = indeterminate && !selectAll ? (bool?)null : selectAll;
+                        groupRow.SetChecked(state, notify: false);
+                    }
+                }
+
+                if (updateHeaderFooter)
+                {
+                    if (HeaderRows.Count > 0 || FooterRows.Count > 0)
+                    {
+                        //var filteredItems = Table.GetFilteredItems();
+                        var state = Table.IsAllItemsSelected(Selection.AsEnumerable().Cast<object>());
+
+                        // Update header checkbox
+                        foreach (var headerRow in HeaderRows)
+                            headerRow.SetChecked(state, notify: false);
+
+                        // Update footer checkbox
+                        foreach (var footerRow in FooterRows)
+                            footerRow.SetChecked(state, notify: false);
+                    }
                 }
             }
-
-            if (updateHeaderFooter)
+            else
             {
-                if (HeaderRows.Count > 0 || FooterRows.Count > 0)
+                if (updateGroups)
                 {
-                    var itemsCount = Table.GetFilteredItemsCount();
-                    var selectAll = Selection.Count == itemsCount;
-                    var indeterminate = !selectAll && Selection.Count > 0;
-                    var isChecked = selectAll && itemsCount != 0;
-                    var state = indeterminate ? (bool?)null : isChecked;
+                    // Update group checkboxes
+                    foreach (var groupRow in GroupRows)
+                    {
+                        var rowGroupItems = groupRow.Items.ToList();
+                        var itemsCount = Selection.Intersect(rowGroupItems).Count();
+                        var selectAll = itemsCount == rowGroupItems.Count;
+                        var indeterminate = !selectAll && itemsCount > 0 && Selection.Count > 0;
+                        var state = indeterminate && !selectAll ? (bool?)null : selectAll;
+                        groupRow.SetChecked(state, notify: false);
+                    }
+                }
 
-                    // Update header checkbox
-                    foreach (var headerRow in HeaderRows)
-                        headerRow.SetChecked(state, notify: false);
+                if (updateHeaderFooter)
+                {
+                    if (HeaderRows.Count > 0 || FooterRows.Count > 0)
+                    {
+                        var itemsCount = Table.GetFilteredItemsCount();
+                        var selectAll = Selection.Count == itemsCount;
+                        var indeterminate = !selectAll && Selection.Count > 0;
+                        var isChecked = selectAll && itemsCount != 0;
+                        var state = indeterminate ? (bool?)null : isChecked;
 
-                    // Update footer checkbox
-                    foreach (var footerRow in FooterRows)
-                        footerRow.SetChecked(state, notify: false);
+                        // Update header checkbox
+                        foreach (var headerRow in HeaderRows)
+                            headerRow.SetChecked(state, notify: false);
+
+                        // Update footer checkbox
+                        foreach (var footerRow in FooterRows)
+                            footerRow.SetChecked(state, notify: false);
+                    }
                 }
             }
         }
@@ -127,7 +163,7 @@ namespace MudBlazor
                 return;
             if (Rows.TryGetValue(t, out var value) && value == row)
                 Rows.Remove(t);
-            if (!Table.ContainsItem(item))
+            if (!Table.ContainsItem(item) && !Table.PersistSelectedItems)
             {
                 Selection.Remove(t);
                 Table.UpdateSelection();

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -191,6 +192,13 @@ namespace MudBlazor
         [Parameter]
         [Category(CategoryTypes.Table.Selecting)]
         public bool MultiSelection { get; set; }
+
+        /// <summary>
+        /// Defines if selected items should keep alive after trigger ServerData when MultiSelection is true. Default value is false.
+        /// </summary>
+        [Parameter]
+        [Category(CategoryTypes.Table.Behavior)]
+        public bool PersistSelectedItems { get; set; } = false;
 
         /// <summary>
         /// When <c>true</c>, a row-click also toggles the checkbox state.
@@ -510,6 +518,8 @@ namespace MudBlazor
 
         public abstract int GetFilteredItemsCount();
 
+        public abstract IEnumerable<object> GetFilteredItems();
+
         public abstract void SetSelectedItem(object item);
 
         public abstract void SetEditingItem(object item);
@@ -553,7 +563,10 @@ namespace MudBlazor
 
         internal abstract bool IsEditable { get; }
 
+        internal abstract bool? IsAllItemsSelected(IEnumerable<object> selectedItems);
+
         public abstract bool ContainsItem(object item);
+
         public abstract void UpdateSelection();
 
         public Interfaces.IForm Validator { get; set; } = new TableRowValidator();
