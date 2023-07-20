@@ -518,8 +518,6 @@ namespace MudBlazor
 
         public abstract int GetFilteredItemsCount();
 
-        public abstract IEnumerable<object> GetFilteredItems();
-
         public abstract void SetSelectedItem(object item);
 
         public abstract void SetEditingItem(object item);
@@ -563,7 +561,7 @@ namespace MudBlazor
 
         internal abstract bool IsEditable { get; }
 
-        internal abstract bool? IsAllItemsSelected(IEnumerable<object> selectedItems);
+        internal abstract bool? IsAllItemsCurrentPageSelected(IEnumerable<object> selectedItems);
 
         public abstract bool ContainsItem(object item);
 

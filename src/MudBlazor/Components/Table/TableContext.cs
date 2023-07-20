@@ -81,8 +81,8 @@ namespace MudBlazor
                 {
                     if (HeaderRows.Count > 0 || FooterRows.Count > 0)
                     {
-                        //var filteredItems = Table.GetFilteredItems();
-                        var state = Table.IsAllItemsSelected(Selection.AsEnumerable().Cast<object>());
+                        var selectedItems = Selection.AsEnumerable().Cast<object>();
+                        var state = Table.IsAllItemsCurrentPageSelected(selectedItems);
 
                         // Update header checkbox
                         foreach (var headerRow in HeaderRows)
